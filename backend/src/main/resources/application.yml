@@ -1,0 +1,50 @@
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+
+spring:
+  application:
+    name: meal-savings-api
+  datasource:
+    # RDS example: jdbc:oracle:thin:@//<RDS-endpoint>:1521/<service-name>
+    # For RDS TLS, provide the TCPS descriptor and trust-store options through ORACLE_JDBC_URL/JVM options.
+    url: ${ORACLE_JDBC_URL}
+    username: ${ORACLE_USERNAME}
+    password: ${ORACLE_PASSWORD}
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      pool-name: MealSavingsOraclePool
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
+      minimum-idle: ${DB_POOL_MIN_IDLE:2}
+      connection-timeout: 30000
+      validation-timeout: 5000
+      max-lifetime: 1800000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false
+  sql:
+    init:
+      mode: never
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER:meal-savings-api}
+      secret-base64: ${JWT_SECRET_BASE64}
+      access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:PT30M}
+
+logging:
+  level:
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
