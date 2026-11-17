@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
+import AppHeader from './AppHeader.vue'
 import MainScreen from './MainScreen.vue'
+import SignupScreen from './SignupScreen.vue'
 import IngredientScreen from './IngredientScreen.vue'
 import ComparisonScreen from './ComparisonScreen.vue'
 import CompletionScreen from './CompletionScreen.vue'
@@ -83,13 +85,17 @@ function showComingSoon(feature) {
 </script>
 
 <template>
+  <AppHeader
+    v-if="activeScreen !== 'login' && activeScreen !== 'signup'"
+    :active-screen="activeScreen"
+    @navigate="activeScreen = $event"
+    @logout="activeScreen = 'login'"
+  />
   <MainScreen
     v-if="activeScreen === 'home'"
     :total-savings="totalSavings"
     :meal-count="savedRecords.length"
-    @logout="activeScreen = 'login'"
     @select-menu="selectMenu"
-    @view-savings="activeScreen = 'savings'"
     @open-admin="activeScreen = 'admin'"
   />
   <IngredientScreen
@@ -127,6 +133,10 @@ function showComingSoon(feature) {
   <AdminImportScreen
     v-else-if="activeScreen === 'admin'"
     @back="returnToHome"
+  />
+  <SignupScreen
+    v-else-if="activeScreen === 'signup'"
+    @back="activeScreen = 'login'"
   />
   <div v-else class="page-shell">
     <header class="topbar">
@@ -298,7 +308,7 @@ function showComingSoon(feature) {
 
           <div class="signup-prompt">
             <span>아직 계정이 없으신가요?</span>
-            <button class="signup-button" type="button" @click="showComingSoon('회원가입')">무료로 시작하기</button>
+            <button class="signup-button" type="button" @click="activeScreen = 'signup'">무료로 시작하기</button>
           </div>
 
           <div class="privacy-note">

@@ -16,14 +16,6 @@ function formatWon(value) {
 
 <template>
   <div class="flow-screen completion-screen">
-    <header class="flow-topbar">
-      <div class="flow-topbar-inner">
-        <span class="flow-header-spacer"></span>
-        <a class="brand" href="#main-top" aria-label="한끼절약"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M7 17.1c0-5 4-9.1 9-9.1s9 4.1 9 9.1c0 4.1-4 7.4-9 7.4s-9-3.3-9-7.4Z" /><path d="M16 7.4c.2-2.1 1.7-3.6 4.4-4.4-.1 2.8-1.5 4.6-4.4 5.2M10 18.5c2.1 1.6 4.1 2.3 6 2.3s3.9-.7 6-2.3" /></svg></span><span class="brand-name">한끼절약</span></a>
-        <span class="flow-demo-badge"><i></i> 미리보기 기록</span>
-      </div>
-    </header>
-
     <main class="completion-layout">
       <section class="completion-card">
         <div class="completion-mark" aria-hidden="true"><span>✓</span><i>✦</i><b>✦</b></div>

@@ -22,14 +22,6 @@ function formatWon(value) {
 
 <template>
   <div class="flow-screen">
-    <header class="flow-topbar">
-      <div class="flow-topbar-inner">
-        <button class="flow-back" type="button" @click="emit('back')"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 10H4m5 5-5-5 5-5" /></svg> 재료 확인으로</button>
-        <a class="brand" href="#main-top" aria-label="한끼절약"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M7 17.1c0-5 4-9.1 9-9.1s9 4.1 9 9.1c0 4.1-4 7.4-9 7.4s-9-3.3-9-7.4Z" /><path d="M16 7.4c.2-2.1 1.7-3.6 4.4-4.4-.1 2.8-1.5 4.6-4.4 5.2M10 18.5c2.1 1.6 4.1 2.3 6 2.3s3.9-.7 6-2.3" /></svg></span><span class="brand-name">한끼절약</span></a>
-        <span class="flow-demo-badge"><i></i> 미리보기</span>
-      </div>
-    </header>
-
     <main class="flow-layout comparison-layout">
       <nav class="flow-steps" aria-label="식비 비교 단계">
         <span class="flow-step done"><b>01</b> 메뉴 선택</span><i></i>

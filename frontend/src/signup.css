@@ -1,0 +1,51 @@
+.signup-page { width: min(100% - 80px, 1240px); }
+.signup-layout { min-height: calc(100vh - 98px); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(370px, .95fr); align-items: center; gap: clamp(44px, 8vw, 112px); padding: 15px 0 56px; }
+.signup-intro { padding: 25px 0 25px 34px; }
+.signup-intro > .eyebrow { margin-bottom: 17px; }
+.signup-intro h1 { margin: 0; color: #1d382a; font-size: clamp(39px, 4.8vw, 58px); font-weight: 800; letter-spacing: -.08em; line-height: 1.23; }
+.signup-intro h1 span { color: #63936a; }
+.signup-intro > p:not(.eyebrow) { max-width: 410px; margin: 17px 0 26px; color: #74847a; font-size: 13px; line-height: 1.8; }
+.signup-benefit { display: flex; align-items: center; gap: 11px; margin-top: 14px; }
+.signup-benefit > span { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 10px; background: #eaf3e7; color: #5d8e62; font-size: 14px; font-weight: 750; }
+.signup-benefit div { display: grid; gap: 3px; }
+.signup-benefit b { color: #405746; font-size: 10px; }
+.signup-benefit small { color: #98a39a; font-size: 9px; }
+.signup-card { width: 100%; max-width: 470px; justify-self: center; padding: 28px 31px 23px; border: 1px solid #e5ece1; border-radius: 21px; background: rgba(255,255,253,.94); box-shadow: 0 18px 50px rgba(44,73,47,.075); }
+.signup-card-heading { margin-bottom: 18px; }
+.signup-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 30px; background: #edf5e9; color: #658366; font-size: 9px; font-weight: 700; }
+.signup-card-heading h2 { margin: 14px 0 5px; color: #203a2b; font-size: 25px; font-weight: 800; letter-spacing: -.06em; }
+.signup-card-heading p { margin: 0; color: #8b988e; font-size: 10px; }
+.signup-form { display: grid; gap: 8px; }
+.signup-field-label { margin-top: 4px; color: #526257; font-size: 10px; font-weight: 700; }
+.signup-input { width: 100%; height: 42px; padding: 0 12px; border: 1px solid #e3e9e1; border-radius: 9px; outline: 0; background: #fff; color: #34483a; font-size: 10px; }
+.signup-input::placeholder { color: #a5afa6; }
+.signup-input:focus { border-color: #86a989; box-shadow: 0 0 0 3px rgba(98,151,107,.1); }
+.signup-password-wrap { position: relative; }
+.signup-password-wrap .signup-input { padding-right: 55px; }
+.signup-password-wrap button { position: absolute; top: 0; right: 4px; height: 42px; padding: 0 8px; border: 0; background: transparent; color: #7d907e; font-size: 9px; }
+.signup-inline-error { margin: -3px 0 0; color: #ac6a5c; font-size: 9px; }
+.signup-agreement { display: flex; align-items: flex-start; gap: 8px; margin: 5px 0 3px; color: #7f8d83; font-size: 9px; line-height: 1.5; }
+.signup-agreement input { width: 14px; height: 14px; flex: 0 0 14px; margin: 0; accent-color: #4e8058; }
+.signup-submit { height: 45px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 10px; background: #34744a; color: white; font-size: 11px; font-weight: 750; box-shadow: 0 5px 12px rgba(52,116,74,.17); }
+.signup-submit:hover { background: #2b663f; }
+.signup-submit svg { width: 16px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.signup-notice { margin: 0; padding: 9px 10px; border-radius: 8px; background: #f1f6ed; color: #647d63; font-size: 9px; line-height: 1.5; }
+.signup-login-prompt { display: flex; justify-content: center; gap: 6px; margin-top: 17px; padding-top: 15px; border-top: 1px solid #edf0ea; color: #89968c; font-size: 9px; }
+.signup-login-prompt button { padding: 0; border: 0; background: transparent; color: #4f8058; font-size: inherit; font-weight: 750; }
+
+@media (max-width: 900px) {
+  .signup-page { width: min(100% - 48px, 650px); }
+  .signup-layout { min-height: calc(100vh - 98px); grid-template-columns: 1fr; gap: 10px; padding: 5px 0 40px; }
+  .signup-intro { display: none; }
+  .signup-card { max-width: 510px; }
+}
+
+@media (max-width: 560px) {
+  .signup-page { width: calc(100% - 32px); }
+  .signup-page .topbar { height: 72px; }
+  .signup-page .brand-mark { width: 35px; height: 35px; border-radius: 11px; }
+  .signup-page .brand-name { font-size: 17px; }
+  .signup-page .topbar-note { gap: 7px; font-size: 9px; }
+  .signup-layout { min-height: calc(100vh - 72px); padding: 5px 0 28px; }
+  .signup-card { padding: 23px 19px 19px; border-radius: 17px; }
+}

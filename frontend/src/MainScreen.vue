@@ -5,7 +5,7 @@ const props = defineProps({
   totalSavings: { type: Number, default: 0 },
   mealCount: { type: Number, default: 0 },
 })
-const emit = defineEmits(['logout', 'select-menu', 'view-savings', 'open-admin'])
+const emit = defineEmits(['select-menu', 'open-admin'])
 
 const searchQuery = ref('')
 const selectedCategory = ref('전체')
@@ -196,34 +196,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="main-screen">
-    <header class="main-topbar">
-      <div class="main-topbar-inner">
-        <a class="brand" href="#main-top" aria-label="한끼절약 메인으로">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" fill="none">
-              <path d="M7 17.1c0-5 4-9.1 9-9.1s9 4.1 9 9.1c0 4.1-4 7.4-9 7.4s-9-3.3-9-7.4Z" />
-              <path d="M16 7.4c.2-2.1 1.7-3.6 4.4-4.4-.1 2.8-1.5 4.6-4.4 5.2M10 18.5c2.1 1.6 4.1 2.3 6 2.3s3.9-.7 6-2.3" />
-            </svg>
-          </span>
-          <span class="brand-name">한끼절약</span>
-        </a>
-
-        <nav class="main-nav" aria-label="주요 메뉴">
-          <a class="main-nav-link active" href="#menu-list">메뉴 찾기</a>
-          <button class="main-nav-link" type="button" @click="emit('view-savings')">
-            절약 기록
-          </button>
-          <button class="main-nav-link admin-nav-link" type="button" @click="emit('open-admin')">가격 데이터</button>
-        </nav>
-
-        <div class="main-account">
-          <span class="demo-badge"><span aria-hidden="true"></span> 미리보기</span>
-          <span class="account-avatar" aria-hidden="true">한</span>
-          <button class="logout-button" type="button" @click="emit('logout')">나가기</button>
-        </div>
-      </div>
-    </header>
-
     <main id="main-top" class="main-layout">
       <section class="main-hero" aria-labelledby="main-title">
         <div class="hero-content">
@@ -273,11 +245,6 @@ onBeforeUnmount(() => {
           <span class="monthly-decoration" aria-hidden="true">✳</span>
         </aside>
       </section>
-
-      <div class="mobile-screen-links" aria-label="추가 화면">
-        <button type="button" @click="emit('view-savings')"><span>₩</span><b>절약 기록</b><small>{{ mealCount ? `${mealCount}끼 기록` : '기록 확인' }}</small></button>
-        <button type="button" @click="emit('open-admin')"><span>⇧</span><b>가격 데이터</b><small>운영자 화면</small></button>
-      </div>
 
       <section id="menu-list" class="menu-section" aria-labelledby="menu-section-title">
         <div class="menu-section-heading">
@@ -366,6 +333,7 @@ onBeforeUnmount(() => {
       <footer class="main-footer">
         <span>가격은 예시 데이터이며 실제 재료 가격과 다를 수 있어요.</span>
         <span>한 끼의 선택이 만드는 작은 절약</span>
+        <button class="admin-footer-link" type="button" @click="emit('open-admin')">운영자 가격 관리</button>
       </footer>
     </main>
 
