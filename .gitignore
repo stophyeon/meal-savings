@@ -1,0 +1,23 @@
+# Java / Spring Boot
+target/
+build/
+*.class
+*.log
+
+# Vue / Node.js
+node_modules/
+dist/
+npm-debug.log*
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.properties
+/.tools/
+
+# IDE and operating system files
+.idea/
+.vscode/
+.DS_Store
