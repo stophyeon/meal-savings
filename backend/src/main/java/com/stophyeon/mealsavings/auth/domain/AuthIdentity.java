@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -29,12 +28,7 @@ import java.time.ZoneOffset;
 public class AuthIdentity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "appAuthIdentitySequence")
-    @SequenceGenerator(
-            name = "appAuthIdentitySequence",
-            sequenceName = "SEQ_APP_AUTH_IDENTITY",
-            allocationSize = 1
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IDENTITY_ID", nullable = false, precision = 19)
     private Long id;
 

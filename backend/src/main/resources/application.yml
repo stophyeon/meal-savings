@@ -9,14 +9,13 @@ spring:
   application:
     name: meal-savings-api
   datasource:
-    # RDS example: jdbc:oracle:thin:@//<RDS-endpoint>:1521/<service-name>
-    # For RDS TLS, provide the TCPS descriptor and trust-store options through ORACLE_JDBC_URL/JVM options.
-    url: ${ORACLE_JDBC_URL}
-    username: ${ORACLE_USERNAME}
-    password: ${ORACLE_PASSWORD}
-    driver-class-name: oracle.jdbc.OracleDriver
+    # RDS example: jdbc:postgresql://<RDS-endpoint>:5432/<database>?sslmode=verify-full&sslrootcert=<absolute-path-to-rds-ca.pem>
+    url: ${DB_JDBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
     hikari:
-      pool-name: MealSavingsOraclePool
+      pool-name: MealSavingsPostgreSqlPool
       maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
       minimum-idle: ${DB_POOL_MIN_IDLE:2}
       connection-timeout: 30000

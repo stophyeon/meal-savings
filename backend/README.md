@@ -1,21 +1,28 @@
 # Meal Savings API
 
-Spring Boot REST API for local account signup/login. The database target is Amazon RDS for Oracle. No RDS endpoint or credentials are stored in this repository.
+Spring Boot REST API for local account signup/login. The database target is Amazon RDS for PostgreSQL. No RDS endpoint or credentials are stored in this repository.
 
 ## IntelliJ setup
 
 1. Open the repository root in IntelliJ IDEA.
 2. Open `backend/pom.xml` and choose **Load Maven Project** if IntelliJ does not import it automatically.
 3. Set the environment variables from `.env.example` in **Run → Edit Configurations → Environment variables**.
-4. Run `MealSavingsApiApplication`.
+4. Set `DB_JDBC_URL` to the RDS endpoint, database name, and downloaded RDS CA certificate path. The example uses `sslmode=verify-full` so the driver verifies the certificate and endpoint hostname.
+5. Run `MealSavingsApiApplication`.
 
 Use a generated JWT key for local development, for example `openssl rand -base64 32`. Put the result in the run configuration only. In AWS, load database credentials and the JWT signing key from AWS Secrets Manager or another secret store. Do not commit real values.
 
-## Amazon RDS for Oracle
+## Amazon RDS for PostgreSQL
 
-Set `ORACLE_JDBC_URL` to the JDBC Thin URL supplied for the RDS Oracle instance, for example `jdbc:oracle:thin:@//<endpoint>:1521/<service-name>`. The VPC route, subnet routing, and RDS security group must allow the backend host to reach the instance port. If the connection uses TCPS, set the corresponding Oracle TLS descriptor and trust-store/JVM options in the deployment environment.
+Set `DB_JDBC_URL` to a PostgreSQL JDBC URL, for example:
 
-Create or select an application schema and run `src/main/resources/db/oracle/schema-v1.sql` once as that schema user before starting the API. Hibernate uses `ddl-auto: validate`; it checks the mapping and does not create or alter production tables.
+```text
+jdbc:postgresql://<endpoint>:5432/<database>?sslmode=verify-full&sslrootcert=<absolute-path-to-rds-ca.pem>
+```
+
+Download the current RDS CA bundle from AWS and make the certificate available to the Java process. `verify-full` requires a trusted CA certificate and checks that the certificate hostname matches the RDS endpoint. The VPC route, subnet routing, and RDS security group must allow the backend host to reach port 5432.
+
+Create or select an application database and run `src/main/resources/db/postgresql/schema-v1.sql` once as that database user before starting the API. Hibernate uses `ddl-auto: validate`; it checks the mapping and does not create or alter production tables. The schema uses PostgreSQL identity columns and timezone-aware timestamps.
 
 ## Auth API
 
@@ -62,4 +69,4 @@ From this directory, use IntelliJ's Maven tool window or run:
 mvn -DskipTests package
 ```
 
-The API cannot start until the Oracle schema, Oracle environment variables, and a Base64 JWT key of at least 32 decoded bytes are configured.
+The API cannot start until the PostgreSQL schema, database environment variables, RDS CA certificate, and a Base64 JWT key of at least 32 decoded bytes are configured.

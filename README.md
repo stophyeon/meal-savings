@@ -17,7 +17,7 @@
 
 - 프론트엔드: Vue.js
 - 백엔드: Java, Spring Boot
-- 데이터베이스: Oracle
+- 데이터베이스: PostgreSQL
 
 ## MVP 기능
 
@@ -56,6 +56,6 @@ npm run dev
 
 ### 백엔드
 
-Spring Boot API는 `backend/`에 있습니다. Amazon RDS for Oracle 연결 설정, 로그인·회원가입 API, OAuth 확장을 고려한 인증 구조와 IntelliJ 실행 방법은 [백엔드 README](backend/README.md)를 참고합니다.
+Spring Boot API는 `backend/`에 있습니다. Amazon RDS for PostgreSQL 연결 설정, 로그인·회원가입 API, OAuth 확장을 고려한 인증 구조와 IntelliJ 실행 방법은 [백엔드 README](backend/README.md)를 참고합니다.
 
-현재 백엔드는 JWT 서명키와 Oracle 접속 정보를 환경변수로 받으며, 로컬 자격 증명 로그인/회원가입만 구현되어 있습니다. 프런트엔드 회원가입·로그인 화면은 아직 API와 연결되지 않았습니다.
+현재 백엔드는 JWT 서명키와 PostgreSQL 접속 정보를 환경변수로 받으며, 로컬 자격 증명 로그인/회원가입만 구현되어 있습니다. 프런트엔드 회원가입·로그인 화면은 아직 API와 연결되지 않았습니다.
