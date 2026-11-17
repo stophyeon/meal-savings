@@ -42,4 +42,18 @@
 
 ## 로컬 개발
 
-개발 환경 및 실행 방법은 프론트엔드와 백엔드 구현에 맞춰 추가합니다.
+### 프런트엔드
+
+로그인 MVP 화면은 `frontend/`에 있습니다. [Vue 공식 시작 가이드](https://vuejs.org/guide/quick-start.html)의 Node.js 요구 버전을 설치한 뒤 실행합니다.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+현재 로그인, 회원가입, 비밀번호 재설정 API는 연결되지 않았으며 화면 상호작용과 입력 검증만 구현되어 있습니다.
+
+### 백엔드
+
+Spring Boot와 Oracle 연동 절차는 백엔드 프로젝트를 추가할 때 안내합니다.
