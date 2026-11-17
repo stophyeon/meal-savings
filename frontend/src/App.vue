@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import MainScreen from './MainScreen.vue'
 
+const showMain = ref(false)
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(true)
@@ -17,7 +19,7 @@ const weekDays = [
 ]
 
 function handleLogin() {
-  feedback.value = '로그인 API가 아직 연결되지 않았어요. 화면 미리보기 상태입니다.'
+  showMain.value = true
 }
 
 function showComingSoon(feature) {
@@ -26,7 +28,8 @@ function showComingSoon(feature) {
 </script>
 
 <template>
-  <div class="page-shell">
+  <MainScreen v-if="showMain" @logout="showMain = false" />
+  <div v-else class="page-shell">
     <header class="topbar">
       <a class="brand" href="#top" aria-label="한끼절약 홈">
         <span class="brand-mark" aria-hidden="true">
