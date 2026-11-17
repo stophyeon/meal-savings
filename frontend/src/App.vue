@@ -1,8 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import MainScreen from './MainScreen.vue'
+import IngredientScreen from './IngredientScreen.vue'
+import ComparisonScreen from './ComparisonScreen.vue'
+import CompletionScreen from './CompletionScreen.vue'
+import SavingsScreen from './SavingsScreen.vue'
+import AdminImportScreen from './AdminImportScreen.vue'
+import { calculateMealEstimate, pantryIngredients } from './meal-data.js'
 
-const showMain = ref(false)
+const activeScreen = ref('login')
+const selectedMenu = ref(null)
+const servings = ref(2)
+const ownedIngredients = ref([])
+const savedRecords = ref([])
+const latestRecord = ref(null)
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(true)
@@ -19,7 +30,51 @@ const weekDays = [
 ]
 
 function handleLogin() {
-  showMain.value = true
+  activeScreen.value = 'home'
+}
+
+function selectMenu(menu) {
+  selectedMenu.value = menu
+  servings.value = menu.servings
+  ownedIngredients.value = menu.ingredients.filter((name) => pantryIngredients.includes(name))
+  activeScreen.value = 'ingredients'
+}
+
+function compareCosts(selection) {
+  servings.value = selection.servings
+  ownedIngredients.value = selection.ownedIngredients
+  activeScreen.value = 'comparison'
+}
+
+const mealEstimate = computed(() => {
+  if (!selectedMenu.value) return null
+  return calculateMealEstimate(selectedMenu.value, servings.value, ownedIngredients.value)
+})
+
+const totalSavings = computed(() => savedRecords.value.reduce((total, record) => total + record.savings, 0))
+
+function finishCooking() {
+  if (!selectedMenu.value || !mealEstimate.value) return
+
+  const record = {
+    id: Date.now(),
+    name: selectedMenu.value.name,
+    emoji: selectedMenu.value.emoji,
+    servings: servings.value,
+    dateLabel: new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }),
+    cookingCost: mealEstimate.value.cookingCost,
+    shoppingCost: mealEstimate.value.shoppingCost,
+    dineOutCost: mealEstimate.value.dineOutCost,
+    savings: Math.max(0, mealEstimate.value.savings),
+    comparisonDelta: mealEstimate.value.savings,
+  }
+  latestRecord.value = record
+  savedRecords.value = [record, ...savedRecords.value]
+  activeScreen.value = 'completion'
+}
+
+function returnToHome() {
+  activeScreen.value = 'home'
 }
 
 function showComingSoon(feature) {
@@ -28,7 +83,51 @@ function showComingSoon(feature) {
 </script>
 
 <template>
-  <MainScreen v-if="showMain" @logout="showMain = false" />
+  <MainScreen
+    v-if="activeScreen === 'home'"
+    :total-savings="totalSavings"
+    :meal-count="savedRecords.length"
+    @logout="activeScreen = 'login'"
+    @select-menu="selectMenu"
+    @view-savings="activeScreen = 'savings'"
+    @open-admin="activeScreen = 'admin'"
+  />
+  <IngredientScreen
+    v-else-if="activeScreen === 'ingredients' && selectedMenu"
+    :menu="selectedMenu"
+    :servings="servings"
+    :owned-ingredients="ownedIngredients"
+    @back="returnToHome"
+    @compare="compareCosts"
+  />
+  <ComparisonScreen
+    v-else-if="activeScreen === 'comparison' && selectedMenu && mealEstimate"
+    :menu="selectedMenu"
+    :servings="servings"
+    :owned-ingredients="ownedIngredients"
+    :estimate="mealEstimate"
+    @back="activeScreen = 'ingredients'"
+    @home="returnToHome"
+    @record="finishCooking"
+  />
+  <CompletionScreen
+    v-else-if="activeScreen === 'completion' && latestRecord"
+    :record="latestRecord"
+    :total-savings="totalSavings"
+    @home="returnToHome"
+    @history="activeScreen = 'savings'"
+  />
+  <SavingsScreen
+    v-else-if="activeScreen === 'savings'"
+    :records="savedRecords"
+    :total-savings="totalSavings"
+    @back="returnToHome"
+    @select-menu="returnToHome"
+  />
+  <AdminImportScreen
+    v-else-if="activeScreen === 'admin'"
+    @back="returnToHome"
+  />
   <div v-else class="page-shell">
     <header class="topbar">
       <a class="brand" href="#top" aria-label="한끼절약 홈">

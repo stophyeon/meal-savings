@@ -1,7 +1,11 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
-const emit = defineEmits(['logout'])
+const props = defineProps({
+  totalSavings: { type: Number, default: 0 },
+  mealCount: { type: Number, default: 0 },
+})
+const emit = defineEmits(['logout', 'select-menu', 'view-savings', 'open-admin'])
 
 const searchQuery = ref('')
 const selectedCategory = ref('전체')
@@ -27,7 +31,7 @@ const menus = [
     homeCost: 6800,
     dineOutCost: 10000,
     description: '익은 김치와 돼지고기로 끓이는 든든한 한 끼',
-    ingredients: ['김치', '돼지고기', '두부', '대파'],
+    ingredients: ['김치', '돼지고기', '두부', '대파', '양파', '고춧가루', '다진마늘', '국간장'],
     searchTerms: '김치 돼지고기 찌개 국물 한식',
   },
   {
@@ -42,7 +46,7 @@ const menus = [
     homeCost: 3200,
     dineOutCost: 8000,
     description: '참치와 달걀을 올려 간단히 완성하는 덮밥',
-    ingredients: ['참치캔', '달걀', '밥', '마요네즈'],
+    ingredients: ['참치캔', '달걀', '밥', '마요네즈', '김가루', '간장'],
     searchTerms: '참치 마요 덮밥 밥 달걀 계란',
   },
   {
@@ -57,7 +61,7 @@ const menus = [
     homeCost: 5400,
     dineOutCost: 9000,
     description: '냉장고 속 채소를 넣어 보글보글 끓여요',
-    ingredients: ['된장', '애호박', '두부', '양파'],
+    ingredients: ['된장', '애호박', '두부', '양파', '감자', '대파', '고춧가루'],
     searchTerms: '된장 찌개 애호박 두부 채소 국',
   },
   {
@@ -72,7 +76,7 @@ const menus = [
     homeCost: 7200,
     dineOutCost: 11000,
     description: '매콤달콤한 양념에 볶아 밥과 함께 즐겨요',
-    ingredients: ['돼지고기', '양파', '대파', '고추장'],
+    ingredients: ['돼지고기', '양파', '대파', '고추장', '고춧가루', '다진마늘', '간장', '설탕', '참기름'],
     searchTerms: '제육 돼지고기 볶음 매콤 고추장',
   },
   {
@@ -87,7 +91,7 @@ const menus = [
     homeCost: 8600,
     dineOutCost: 13000,
     description: '토마토소스와 마늘 향으로 만드는 주말 메뉴',
-    ingredients: ['파스타면', '토마토소스', '마늘', '양파'],
+    ingredients: ['파스타면', '토마토소스', '마늘', '양파', '올리브유', '파마산치즈', '바질'],
     searchTerms: '토마토 파스타 면 스파게티 마늘',
   },
   {
@@ -102,7 +106,7 @@ const menus = [
     homeCost: 2500,
     dineOutCost: 7000,
     description: '남은 밥과 달걀로 빠르게 만드는 한 그릇',
-    ingredients: ['달걀', '밥', '대파', '간장'],
+    ingredients: ['달걀', '밥', '대파', '간장', '참기름'],
     searchTerms: '계란 달걀 볶음밥 밥 간단',
   },
   {
@@ -117,7 +121,7 @@ const menus = [
     homeCost: 3900,
     dineOutCost: 8500,
     description: '두부에 짭조름한 양념을 더한 밥도둑 반찬',
-    ingredients: ['두부', '대파', '간장', '고춧가루'],
+    ingredients: ['두부', '대파', '간장', '고춧가루', '마늘', '설탕'],
     searchTerms: '두부 조림 반찬 간단 밥',
   },
   {
@@ -132,7 +136,7 @@ const menus = [
     homeCost: 4800,
     dineOutCost: 10500,
     description: '신선한 채소와 닭가슴살로 가볍게 채워요',
-    ingredients: ['닭가슴살', '양상추', '방울토마토', '드레싱'],
+    ingredients: ['닭가슴살', '양상추', '방울토마토', '드레싱', '오이', '옥수수'],
     searchTerms: '닭가슴살 샐러드 채소 다이어트 간단',
   },
 ]
@@ -206,9 +210,10 @@ onBeforeUnmount(() => {
 
         <nav class="main-nav" aria-label="주요 메뉴">
           <a class="main-nav-link active" href="#menu-list">메뉴 찾기</a>
-          <button class="main-nav-link" type="button" @click="showToast('절약 기록 화면은 다음 단계에서 연결할 예정이에요.')">
+          <button class="main-nav-link" type="button" @click="emit('view-savings')">
             절약 기록
           </button>
+          <button class="main-nav-link admin-nav-link" type="button" @click="emit('open-admin')">가격 데이터</button>
         </nav>
 
         <div class="main-account">
@@ -258,16 +263,21 @@ onBeforeUnmount(() => {
             <span class="monthly-icon" aria-hidden="true">₩</span>
             <span class="monthly-dots" aria-hidden="true">•••</span>
           </div>
-          <span class="monthly-label">이번 달 예상 절약액 <span>예시</span></span>
-          <strong class="monthly-total">18,400<span>원</span></strong>
+          <span class="monthly-label">{{ mealCount ? '이번 세션 절약액' : '이번 달 예상 절약액' }} <span>{{ mealCount ? '기록' : '예시' }}</span></span>
+          <strong class="monthly-total">{{ new Intl.NumberFormat('ko-KR').format(mealCount ? totalSavings : 18400) }}<span>원</span></strong>
           <div class="monthly-progress" aria-hidden="true"><span></span></div>
           <div class="monthly-card-bottom">
             <span>집밥으로 차곡차곡</span>
-            <span><b>6</b>끼 기록</span>
+            <span><b>{{ mealCount || 6 }}</b>끼 {{ mealCount ? '완료' : '예시' }}</span>
           </div>
           <span class="monthly-decoration" aria-hidden="true">✳</span>
         </aside>
       </section>
+
+      <div class="mobile-screen-links" aria-label="추가 화면">
+        <button type="button" @click="emit('view-savings')"><span>₩</span><b>절약 기록</b><small>{{ mealCount ? `${mealCount}끼 기록` : '기록 확인' }}</small></button>
+        <button type="button" @click="emit('open-admin')"><span>⇧</span><b>가격 데이터</b><small>운영자 화면</small></button>
+      </div>
 
       <section id="menu-list" class="menu-section" aria-labelledby="menu-section-title">
         <div class="menu-section-heading">
@@ -379,8 +389,8 @@ onBeforeUnmount(() => {
           <div class="dialog-ingredients">
             <div class="dialog-subheading"><strong>주요 재료</strong><span>전체 {{ selectedMenu.ingredientCount }}개 중</span></div>
             <div class="ingredient-tags">
-              <span v-for="ingredient in selectedMenu.ingredients" :key="ingredient">{{ ingredient }}</span>
-              <span class="more-ingredients">외 {{ selectedMenu.ingredientCount - selectedMenu.ingredients.length }}개</span>
+              <span v-for="ingredient in selectedMenu.ingredients.slice(0, 4)" :key="ingredient">{{ ingredient }}</span>
+              <span v-if="selectedMenu.ingredients.length > 4" class="more-ingredients">외 {{ selectedMenu.ingredients.length - 4 }}개</span>
             </div>
           </div>
 
@@ -389,11 +399,11 @@ onBeforeUnmount(() => {
             <strong>+{{ formatWon(selectedMenu.dineOutCost - selectedMenu.homeCost) }}</strong>
           </div>
 
-          <button class="dialog-primary" type="button" @click="closeMenuDialog(); showToast('재료 보유 확인 화면은 다음 단계에서 연결할 예정이에요.')">
+          <button class="dialog-primary" type="button" @click="emit('select-menu', selectedMenu); closeMenuDialog()">
             재료 보유 여부 확인하기
             <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11M10 5l5 5-5 5" /></svg>
           </button>
-          <p class="dialog-note">현재는 메뉴 선택 미리보기 단계예요. 재료 계산 기능은 준비 중입니다.</p>
+          <p class="dialog-note">보유 재료를 확인한 뒤 집밥과 외식 예상 비용을 비교해요.</p>
         </section>
       </div>
     </Transition>
