@@ -9,11 +9,10 @@ spring:
   application:
     name: meal-savings-api
   datasource:
-    # RDS example: jdbc:postgresql://<RDS-endpoint>:5432/<database>?sslmode=verify-full&sslrootcert=<absolute-path-to-rds-ca.pem>
-    url: ${DB_JDBC_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    # The AWS wrapper creates IAM auth tokens when opening DB connections.
+    url: ${DB_JDBC_URL:jdbc:aws-wrapper:postgresql://database-1.cluster-cxe8e82imo9p.ap-southeast-2.rds.amazonaws.com:5432/postgres?sslmode=require}
+    username: ${DB_USERNAME:postgres}
+    driver-class-name: software.amazon.jdbc.Driver
     hikari:
       pool-name: MealSavingsPostgreSqlPool
       maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
@@ -21,6 +20,10 @@ spring:
       connection-timeout: 30000
       validation-timeout: 5000
       max-lifetime: 1800000
+      data-source-properties:
+        wrapperPlugins: iam
+        iamRegion: ap-southeast-2
+        awsProfile: ${AWS_PROFILE:default}
   jpa:
     open-in-view: false
     hibernate:

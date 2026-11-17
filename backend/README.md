@@ -1,28 +1,75 @@
 # Meal Savings API
 
-Spring Boot REST API for local account signup/login. The database target is Amazon RDS for PostgreSQL. No RDS endpoint or credentials are stored in this repository.
+Spring Boot REST API for local account signup/login. The database target is the Aurora PostgreSQL cluster `database-1` in `ap-southeast-2`. The endpoint and database username are configured in `application.yml`; no AWS access keys, database password, or IAM token are stored in this repository.
 
 ## IntelliJ setup
 
 1. Open the repository root in IntelliJ IDEA.
 2. Open `backend/pom.xml` and choose **Load Maven Project** if IntelliJ does not import it automatically.
-3. Set the environment variables from `.env.example` in **Run → Edit Configurations → Environment variables**.
-4. Set `DB_JDBC_URL` to the RDS endpoint, database name, and downloaded RDS CA certificate path. The example uses `sslmode=verify-full` so the driver verifies the certificate and endpoint hostname.
+3. Make sure AWS CLI credentials are available to the IntelliJ-launched JVM. For a named AWS CLI profile, set `AWS_PROFILE` in **Run → Edit Configurations → Environment variables**. For AWS IAM Identity Center, sign in with `aws sso login --profile <profile-name>` first.
+4. Copy `backend/.env.example` values into the IntelliJ run configuration, including `AWS_PROFILE` if it is not `default`.
 5. Run `MealSavingsApiApplication`.
 
-Use a generated JWT key for local development, for example `openssl rand -base64 32`. Put the result in the run configuration only. In AWS, load database credentials and the JWT signing key from AWS Secrets Manager or another secret store. Do not commit real values.
+Use a generated JWT key for local development, for example `openssl rand -base64 32`. Put the result in the run configuration only. In AWS, give the application runtime an IAM role with the required database connection permission and load the JWT signing key from AWS Secrets Manager or another secret store. Do not commit real values.
 
 ## Amazon RDS for PostgreSQL
 
-Set `DB_JDBC_URL` to a PostgreSQL JDBC URL, for example:
+`application.yml` is configured for the endpoint and database name supplied for this project:
 
 ```text
-jdbc:postgresql://<endpoint>:5432/<database>?sslmode=verify-full&sslrootcert=<absolute-path-to-rds-ca.pem>
+jdbc:aws-wrapper:postgresql://database-1.cluster-cxe8e82imo9p.ap-southeast-2.rds.amazonaws.com:5432/postgres?sslmode=require
 ```
 
-Download the current RDS CA bundle from AWS and make the certificate available to the Java process. `verify-full` requires a trusted CA certificate and checks that the certificate hostname matches the RDS endpoint. The VPC route, subnet routing, and RDS security group must allow the backend host to reach port 5432.
+The AWS Advanced JDBC Wrapper's `iam` plugin creates and refreshes IAM database authentication tokens for new PostgreSQL connections. The JDBC URL keeps TLS enabled with `sslmode=require`. Hikari reuses established connections; the short-lived IAM token is only used when each connection is established. The wrapper uses the AWS SDK credential chain and the configured `AWS_PROFILE`.
 
-Create or select an application database and run `src/main/resources/db/postgresql/schema-v1.sql` once as that database user before starting the API. Hibernate uses `ddl-auto: validate`; it checks the mapping and does not create or alter production tables. The schema uses PostgreSQL identity columns and timezone-aware timestamps.
+IAM DB authentication must be enabled for the Aurora cluster. The PostgreSQL role used by the app must have `rds_iam`, and the AWS identity in the profile needs `rds-db:connect` for this cluster resource ID and database username. If `postgres` is already configured for IAM login, keep `DB_USERNAME=postgres`; otherwise configure IAM for that role before connecting. AWS IAM authentication tokens expire after 15 minutes, and the wrapper obtains refreshed tokens as needed. The cluster security group and network path must also allow the computer running IntelliJ to reach port 5432.
+
+The target database is `postgres`. Run `src/main/resources/db/postgresql/schema-v1.sql` once as the connected database user before starting the API. Hibernate uses `ddl-auto: validate`; it checks the mapping and does not create or alter tables.
+
+### Connect and run SQL with `psql`
+
+The AWS CLI must be logged in as the IAM identity that has `rds-db:connect` permission. Generate a fresh token in the terminal; do not put the token in `.env`, source code, or Git:
+
+```bash
+export RDSHOST="database-1.cluster-cxe8e82imo9p.ap-southeast-2.rds.amazonaws.com"
+export AWS_PROFILE="default" # replace if using a named profile
+export PGPASSWORD="$(aws rds generate-db-auth-token --hostname "$RDSHOST" --port 5432 --username postgres --region ap-southeast-2)"
+
+psql "host=$RDSHOST port=5432 dbname=postgres user=postgres sslmode=require"
+```
+
+Inside `psql`, check the connection and list tables:
+
+```sql
+SELECT current_database(), current_user, now();
+
+SELECT table_schema, table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+To create the app tables for the first time, exit `psql` with `\q` and run this from the repository root while the generated token is still valid:
+
+```bash
+psql "host=$RDSHOST port=5432 dbname=postgres user=postgres sslmode=require" \
+  -v ON_ERROR_STOP=1 \
+  -f backend/src/main/resources/db/postgresql/schema-v1.sql
+```
+
+Reconnect using a fresh token, then query app data:
+
+```sql
+SELECT user_id, display_name, email, status, created_at
+FROM app_user_account
+ORDER BY created_at DESC;
+
+SELECT identity_id, user_id, provider, provider_subject, created_at
+FROM app_auth_identity
+ORDER BY created_at DESC;
+```
+
+Exit `psql` with `\q`, then clear the token from the shell with `unset PGPASSWORD`.
 
 ## Auth API
 
@@ -69,4 +116,4 @@ From this directory, use IntelliJ's Maven tool window or run:
 mvn -DskipTests package
 ```
 
-The API cannot start until the PostgreSQL schema, database environment variables, RDS CA certificate, and a Base64 JWT key of at least 32 decoded bytes are configured.
+The API cannot start until the PostgreSQL schema exists, AWS credentials can assume the configured profile, the database user has `rds_iam`, the IAM identity has `rds-db:connect`, and a Base64 JWT key of at least 32 decoded bytes is configured.

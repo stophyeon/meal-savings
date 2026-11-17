@@ -58,4 +58,4 @@ npm run dev
 
 Spring Boot API는 `backend/`에 있습니다. Amazon RDS for PostgreSQL 연결 설정, 로그인·회원가입 API, OAuth 확장을 고려한 인증 구조와 IntelliJ 실행 방법은 [백엔드 README](backend/README.md)를 참고합니다.
 
-현재 백엔드는 JWT 서명키와 PostgreSQL 접속 정보를 환경변수로 받으며, 로컬 자격 증명 로그인/회원가입만 구현되어 있습니다. 프런트엔드 회원가입·로그인 화면은 아직 API와 연결되지 않았습니다.
+현재 백엔드는 Aurora PostgreSQL에 AWS IAM 인증으로 연결하며, JWT 서명키와 AWS CLI 프로파일은 실행 환경에서 받습니다. 로컬 자격 증명 로그인/회원가입만 구현되어 있고 프런트엔드 화면은 아직 API와 연결되지 않았습니다.
